@@ -1,0 +1,199 @@
+---
+title: "Matrix Multiplication"
+output: html_document
+---
+
+```{r}
+# example of multiplying two 2x2 matrices (view plots in pop-out window)
+
+A <- matrix(c(0, 1, 2, 0), nrow = 2)
+B <- matrix(c(1, 1, -2, 0), nrow = 2)
+C <- A %*% B
+
+# graph starting vectors
+par(pty="s") # makes plot square-shaped
+plot(NA, xlim=c(-5,5), ylim=c(-5,5), xlab="X", ylab="Y", main = "starting vectors")
+abline(v=0)
+abline(h=0)
+
+arrows(x0 = 0, y0 = 0, x1 = 1, y1 = 0, col = "green",lwd = 2)
+arrows(x0 = 0, y0 = 0, x1 = 0, y1 = 1, col = "orange",lwd = 2)
+text(x = .5, y = -.25, labels = "i", col = "green", cex = 2)
+text(x = -.5, y = .25, labels = "j", col = "orange", cex = 2)
+
+# first transformation (B)
+par(pty="s") # makes plot square-shaped
+plot(NA, xlim=c(-5,5), ylim=c(-5,5), xlab="X", ylab="Y", main = "first transformation")
+abline(v=0)
+abline(h=0)
+
+arrows(x0 = 0, y0 = 0, x1 = 1, y1 = 0, col = "green",lwd = 2, lty = "dashed")
+arrows(x0 = 0, y0 = 0, x1 = 0, y1 = 1, col = "orange",lwd = 2, lty = "dashed")
+
+arrows(x0 = 0, y0 = 0, x1 = 1, y1 = 1, col = "green",lwd = 2, lty = "solid")
+arrows(x0 = 0, y0 = 0, x1 = -2, y1 = 0, col = "orange",lwd = 2, lty = "solid")
+
+text(x = 1.25, y = 1.25, labels = "i", col = "green", cex = 2)
+text(x = -.5, y = -.25, labels = "j", col = "orange", cex = 2)
+
+# second transformation (A)
+par(pty="s") # makes plot square-shaped
+plot(NA, xlim=c(-5,5), ylim=c(-5,5), xlab="X", ylab="Y", main = "second transformation")
+
+abline(v=0)
+abline(h=0)
+
+arrows(x0 = 0, y0 = 0, x1 = 1, y1 = 1, col = "green",lwd = 2, lty = "dashed")
+arrows(x0 = 0, y0 = 0, x1 = -2, y1 = 0, col = "orange",lwd = 2, lty = "dashed")
+
+arrows(x0 = 0, y0 = 0, x1 = 2, y1 = 1, col = "green",lwd = 2, lty = "solid")
+arrows(x0 = 0, y0 = 0, x1 = 0, y1 = -2, col = "orange",lwd = 2, lty = "solid")
+
+text(x = 2.5, y = 1.25, labels = "i", col = "green", cex = 2)
+text(x = .5, y = -1, labels = "j", col = "orange", cex = 2)
+```
+
+
+```{r}
+# template for multiplying any two 2x2 matrices
+# can only use if the starting vector doesn't have a purely vertical component
+
+# define transformations of interest
+A <- matrix(c(0, 1, 2, 0), nrow = 2)
+B <- matrix(c(1, 1, -2, 0), nrow = 2)
+
+# define starting vector
+S <- matrix(c(1, 1, -1, 1), nrow = 2)
+iaxis <- as.numeric(S[2,1])/as.numeric(S[1,1])
+jaxis <- as.numeric(S[2,2])/as.numeric(S[1,2])
+
+# graph starting vectors
+par(pty="s") # makes plot square-shaped
+plot(NA, xlim=c(-5,5), ylim=c(-5,5), xlab="X", ylab="Y", main = "starting vectors")
+
+arrows(x0 = 0, y0 = 0, x1 = S[1,1], y1 = S[2,1], col = "green",lwd = 2, lty = "solid")
+arrows(x0 = 0, y0 = 0, x1 = S[1,2], y1 = S[2,2], col = "orange",lwd = 2, lty = "solid")
+
+abline(a = 0, b = iaxis)
+abline(a = 0, b = jaxis)
+
+text(x = -4.5, y = 4.5, labels = "i", col = "green", cex = 2)
+text(x = -4.5, y = 4, labels = "j", col = "orange", cex = 2)
+
+# first transformation (B)
+par(pty="s") # makes plot square-shaped
+plot(NA, xlim=c(-5,5), ylim=c(-5,5), xlab="X", ylab="Y", main = "first transformation")
+abline(a = 0, b = iaxis)
+abline(a = 0, b = jaxis)
+
+arrows(x0 = 0, y0 = 0, x1 = S[1,1], y1 = S[2,1], col = "green",lwd = 2, lty = "dashed")
+arrows(x0 = 0, y0 = 0, x1 = S[1,2], y1 = S[2,2], col = "orange",lwd = 2, lty = "dashed")
+
+ftransi <- B %*% S[,1] # i component of the first transformation
+ftransj <- B %*% S[,2] # j component of the first transformation
+
+arrows(x0 = 0, y0 = 0, x1 = as.numeric(ftransi[1]), y1 = as.numeric(ftransi[2]), col = "green",lwd = 2, lty = "solid")
+arrows(x0 = 0, y0 = 0, x1 = as.numeric(ftransj[1]), y1 = as.numeric(ftransj[2]), col = "orange",lwd = 2, lty = "solid")
+
+# second transformation (A)
+par(pty="s") # makes plot square-shaped
+plot(NA, xlim=c(-5,5), ylim=c(-5,5), xlab="X", ylab="Y", main = "second transformation")
+
+abline(a = 0, b = iaxis)
+abline(a = 0, b = jaxis)
+
+stransi <- A %*% ftransi # i component of the second transformation
+stransj <- A %*% ftransj # j component of the second transformation
+
+arrows(x0 = 0, y0 = 0, x1 = as.numeric(ftransi[1]), y1 = as.numeric(ftransi[2]), col = "green",lwd = 2, lty = "dashed")
+arrows(x0 = 0, y0 = 0, x1 = as.numeric(ftransj[1]), y1 = as.numeric(ftransj[2]), col = "orange",lwd = 2, lty = "dashed")
+
+arrows(x0 = 0, y0 = 0, x1 = as.numeric(stransi[1]), y1 = as.numeric(stransi[2]), col = "green",lwd = 2, lty = "solid")
+arrows(x0 = 0, y0 = 0, x1 = as.numeric(stransj[1]), y1 = as.numeric(stransj[2]), col = "orange",lwd = 2, lty = "solid")
+```
+
+
+
+```{r}
+# didn't use to complete visualization of 3x3 matrix multiplication
+
+install.packages("plot3D")
+library("plot3D")
+
+
+A <- matrix(data = c(4, 2, -1, -1), nrow = 2)
+B <- matrix(data = c(3, 2, 1, 1, 0, -2), nrow = 2)
+S <- matrix(c(1, 0, 0, 0, 1, 0, 0, 0, 1), nrow = 3)
+
+# 
+arrows3D(x0 = c(0,0,0), y0 = c(0,0,0), z0 = c(0,0,0), x1 = S[1:3,1], y1 = S[1:3,2], z1 = S[1:3,3], col = c("green", "orange", "blue"), ticktype = "detailed") # i hat
+text3D(x = S[1:3,1], y = S[1:3,2], z = S[1:3,3], c("i", "j", "k"), col = c("green", "orange", "blue"), add=TRUE, colkey = FALSE, cex = 2)
+
+```
+
+
+```{r echo=FALSE, include=FALSE}
+# required for graphing in 3D
+
+library(rgl)
+setupKnitr(autoprint = TRUE)
+```
+
+
+```{r}
+# graph two 3x3 matrix multiplication in 3D
+
+A <- matrix(data = c(4, 2, 0, -1, -1, 0, 0, 0, 0), nrow = 3)
+B <- matrix(data = c(3, 2, 0, 1, 1, 0, 0, -2, 0), nrow = 3)
+
+# graph starting vectors
+v <- matrix(c(0,0,0,
+              1,0,0,
+              0,1,0,
+              0,0,1), ncol = 4) # matrix of starting vectors (first column is origin coordinates)
+
+plot3d(v, xlab = "x", ylab = "y", zlab = "z", xlim = 5, ylim = 5, zlim = 5, main = "starting vectors")
+arrow3d(p0 = v[,1], p1 = v[,2], col = "green", type = "rotation")
+arrow3d(p0 = v[,1], p1 = v[,3], col = "orange", type = "rotation")
+arrow3d(p0 = v[,1], p1 = v[,4], col = "blue", type = "rotation")
+
+# first transformation (B)
+
+ftransi <- B %*% v[,2]
+ftransj <- B %*% v[,3]
+ftransk <- B %*% v[,4]
+
+v <- cbind(v, ftransi) # add vectors for transformed i, j, k to v
+v <- cbind(v, ftransj)
+v <- cbind(v, ftransk)
+  
+plot3d(v, xlab = "x", ylab = "y", zlab = "z", xlim = 5, ylim = 5, zlim = 5, main = "first transformation")
+arrow3d(p0 = v[,1], p1 = v[,2], col = "gray", type = "rotation")
+arrow3d(p0 = v[,1], p1 = v[,3], col = "gray", type = "rotation")
+arrow3d(p0 = v[,1], p1 = v[,4], col = "gray", type = "rotation")
+
+arrow3d(p0 = v[,1], p1 = v[,5], col = "green", type = "rotation")
+arrow3d(p0 = v[,1], p1 = v[,6], col = "orange", type = "rotation")
+arrow3d(p0 = v[,1], p1 = v[,7], col = "blue", type = "rotation")
+
+# second transformation (A)
+
+stransi <- A %*% v[,5]
+stransj <- A %*% v[,6]
+stransk <- A %*% v[,7]
+
+v <- cbind(v, stransi) # add vectors for transformed i, j, k to v
+v <- cbind(v, stransj)
+v <- cbind(v, stransk)
+
+plot3d(v, xlab = "x", ylab = "y", zlab = "z", xlim = 5, ylim = 5, zlim = 5, main = "second transformation")
+
+arrow3d(p0 = v[,1], p1 = v[,5], col = "gray", type = "rotation")
+arrow3d(p0 = v[,1], p1 = v[,6], col = "gray", type = "rotation")
+arrow3d(p0 = v[,1], p1 = v[,7], col = "gray", type = "rotation")
+
+arrow3d(p0 = v[,1], p1 = v[,8], col = "green", type = "rotation")
+arrow3d(p0 = v[,1], p1 = v[,9], col = "orange", type = "rotation")
+arrow3d(p0 = v[,1], p1 = v[,10], col = "blue", type = "rotation")
+
+```

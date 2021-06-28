@@ -1,0 +1,88 @@
+---
+title: "Determinants"
+output: html_document
+---
+
+```{r}
+# define matrix
+A <- matrix(c(4, -3, 1, 2.5), nrow = 2)
+
+# define starting vector
+S <- matrix(c(1, 0, 0, 1), nrow = 2)
+
+# graph starting vectors
+par(pty="s") # makes plot square-shaped
+plot(NA, xlim=c(-5,5), ylim=c(-5,5), xlab="X", ylab="Y", main = "starting vectors")
+
+arrows(x0 = 0, y0 = 0, x1 = S[1,1], y1 = S[2,1], col = "green",lwd = 2, lty = "solid")
+arrows(x0 = 0, y0 = 0, x1 = S[1,2], y1 = S[2,2], col = "orange",lwd = 2, lty = "solid")
+
+abline(h = 0)
+abline(v = 0)
+
+text(x = -4.5, y = 4.5, labels = "i", col = "green", cex = 2)
+text(x = -4.5, y = 4, labels = "j", col = "orange", cex = 2)
+
+# graph determinant of starting vector
+C <- S[,1] + S[,2] # calculate rectangle corner
+determinant_color <- rgb(0, 0, 255, max = 255, alpha = 125, names = "blue50")
+polygon(x = c(0, S[1,1], C[1], S[1,2]), y = c(0, S[2,1], C[2], S[2,2]), col = determinant_color)
+text(x = -4.5, y = -4.5, paste("det: ", as.numeric(det(S))))
+
+# graph the transformation
+par(pty="s") # makes plot square-shaped
+plot(NA, xlim=c(-5,5), ylim=c(-5,5), xlab="X", ylab="Y", main = "after transformation")
+abline(h = 0)
+abline(v = 0)
+
+arrows(x0 = 0, y0 = 0, x1 = S[1,1], y1 = S[2,1], col = "green",lwd = 2, lty = "dashed")
+arrows(x0 = 0, y0 = 0, x1 = S[1,2], y1 = S[2,2], col = "orange",lwd = 2, lty = "dashed")
+
+ftransi <- A %*% S[,1] # i component of the first transformation
+ftransj <- A %*% S[,2] # j component of the first transformation
+
+arrows(x0 = 0, y0 = 0, x1 = as.numeric(ftransi[1]), y1 = as.numeric(ftransi[2]), col = "green",lwd = 2, lty = "solid")
+arrows(x0 = 0, y0 = 0, x1 = as.numeric(ftransj[1]), y1 = as.numeric(ftransj[2]), col = "orange",lwd = 2, lty = "solid")
+
+# graph determinant of transformation
+C <- ftransi + ftransj
+polygon(x = c(0, ftransi[1], C[1], ftransj[1]), y = c(0, ftransi[2], C[2], ftransj[2]), col = determinant_color)
+text(x = -4.5, y = -4.5, paste("det: ", as.numeric(det(cbind(ftransi, ftransj)))))
+
+```
+
+
+```{r echo=FALSE, include=FALSE}
+# required for graphing in 3D using rgl
+
+library(rgl)
+setupKnitr(autoprint = TRUE)
+```
+
+
+
+```{r}
+# define matrix
+A <- matrix(c(1, .5, 1, 0, 1, 0, .5, 0, 1), nrow = 3)
+
+# define starting vector
+S <- matrix(c(0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1), nrow = 3) # matrix of starting vectors (first column is origin coordinates)
+
+# graph starting vectors
+plot3d(S, xlab = "x", ylab = "y", zlab = "z", xlim = 5, ylim = 5, zlim = 5, main = "starting vectors")
+arrow3d(p0 = S[,1], p1 = S[,2], col = "green", type = "rotation")
+arrow3d(p0 = S[,1], p1 = S[,3], col = "orange", type = "rotation")
+arrow3d(p0 = S[,1], p1 = S[,4], col = "blue", type = "rotation")
+
+# graph determinant of starting vector
+C1 <- S[,2] + S[,3] # calculate cube corners
+C2 <- S[,2] + S[,3] + S[,4]
+C3 <- S[,2] + S[,4]
+C4 <- S[,3] + S[,4]
+
+determinant_color <- rgb(0, 0, 255, max = 255, alpha = 125, names = "blue50")
+mesh3d(x = c(0, 1, 1, 0), y = c(0,0,0,0), z = c(0, 0, 1, 1), col = determinant_color)
+polygon3d(x = c(S[1,1], S[1,2], C3[1], S[1,4]), y = c(S[2,1], S[2,2], C3[2], S[2,4]), z = c(S[3,1], S[3,2], C3[3], S[3,4]), col = determinant_color)
+
+
+```
